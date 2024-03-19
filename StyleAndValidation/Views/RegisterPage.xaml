@@ -53,14 +53,21 @@
             <Label
                 Grid.Row="2"
                 IsVisible="{Binding ShowUserNameError}"
-                Text="{Binding UserNameErrorMEssage}" />
+                Text="{Binding UserNameErrorMessage}" />
         </Grid>
         <!--  Password  -->
-        <Label Style="{StaticResource lblStyle}" Text="Password" />
-        <Entry
-            IsPassword="True"
-            Style="{StaticResource entStyle}"
-            Text="{Binding Password}" />
+        <Grid RowDefinitions="auto,auto,*">
+            <Label Style="{StaticResource lblStyle}" Text="Password" />
+            <Entry
+                Grid.Row="1"
+                IsPassword="True"
+                Style="{StaticResource entStyle}"
+                Text="{Binding Password}" />
+            <Label
+                Grid.Row="2"
+                IsVisible="{Binding ShowPasswordError}"
+                Text="{Binding PasswordErrorMessage}" />
+        </Grid>
         <!--  FullName  -->
         <Label Style="{StaticResource lblStyle}" Text="Full Name" />
         <Entry Style="{StaticResource entStyle}" Text="{Binding FullName}" />
@@ -70,6 +77,7 @@
             Keyboard="Email"
             Style="{StaticResource entStyle}"
             Text="{Binding Email}" />
+        <DatePicker Date="{Binding BirthDate}" />
         <!--  כפתור הרשמה  -->
         <Button
             Command="{Binding RegisterCommand}"

@@ -19,12 +19,13 @@ namespace StyleAndValidation.ViewModels
         public LoadingPageViewModel()
         {
             IsRunning = true;
-           
+            
         }
         public async Task Close()
         {
             IsRunning = false;
             await AppShell.Current.Navigation.PopModalAsync();  
+            
        //     await AppShell.Current.GoToAsync("..");
         }
     }

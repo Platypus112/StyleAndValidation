@@ -19,7 +19,7 @@ namespace StyleAndValidation.ViewModels
         #endregion
 
         #region Properties
-        public string Password { get => password; set { password = value; OnPropertyChanged(); } }
+        public string Password { get => password; set { password = value; OnPropertyChanged(); ((Command)LoginCommand).ChangeCanExecute(); } }
         public bool ShowPassword { get => showPassword; set{ showPassword = value; OnPropertyChanged(); } }
         public string Username
         {
@@ -54,10 +54,21 @@ namespace StyleAndValidation.ViewModels
         {
             appServices = service;
 
-            LoginCommand = new Command(async() => {bool success= await appServices.Login(Username, Password);  if (success) await AppShell.Current.GoToAsync("///MyPage"); });
+            LoginCommand = new Command(async() => {
+
+                await AppShell.Current.GoToAsync("Loading");
+                bool success= await appServices.Login(Username, Password);
+                if (AppShell.Current.Navigation.ModalStack.Count > 0)
+                    await AppShell.Current.Navigation.PopModalAsync();
+                if (success)
+                {
+                    await AppShell.Current.GoToAsync("///MyPage"); 
+                }
+            },()=>!string.IsNullOrEmpty(Password)&&!string.IsNullOrEmpty(Username));
             RegisterCommand = new Command(async () => 
             {
-                if(AppShell.Current.Navigation.ModalStack.Count>0)
+                await AppShell.Current.GoToAsync("Loading");
+                if (AppShell.Current.Navigation.ModalStack.Count>0)
                     await AppShell.Current.Navigation.PopModalAsync();
                 await AppShell.Current.GoToAsync("Register");
             });

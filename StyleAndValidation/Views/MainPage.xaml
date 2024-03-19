@@ -15,7 +15,6 @@
 
             <Style TargetType="Button">
                 <Setter Property="HeightRequest" Value="70" />
-
                 <Setter Property="BackgroundColor" Value="LightBlue" />
                 <Setter Property="CornerRadius" Value="35" />
             </Style>

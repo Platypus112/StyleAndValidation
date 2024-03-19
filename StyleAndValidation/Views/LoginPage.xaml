@@ -12,7 +12,18 @@
     <Shell.BackButtonBehavior>
         <BackButtonBehavior IsVisible="False" />
     </Shell.BackButtonBehavior>
-
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Button">
+                <Setter Property="BorderColor" Value="LightBlue" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="FontSize" Value="Medium" />
+                <Setter Property="BorderWidth" Value="3" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="TextColor" Value="Aquamarine" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <VerticalStackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
 
         <!--  User Name  -->
@@ -21,36 +32,23 @@
         <Entry Text="{Binding Username}" />
         <!--  Password  -->
         <Label Text="סיסמה" />
-        <Entry IsPassword="{Binding ShowPassword}" Text="{Binding Password}" />
-        <Button
-            Margin="0,-42,0,0"
-            Background="Transparent"
-            BorderColor="Transparent"
-            Command="{Binding ShowPasswordCommand}"
-            HorizontalOptions="End"
-            Text="הצג/הסתר סיסמה"
-            TextColor="Black"
-            ZIndex="2" />
+        <HorizontalStackLayout>
+            <Entry
+                IsPassword="{Binding ShowPassword}"
+                Text="{Binding Password}"
+                WidthRequest="280" />
+            <Button
+                Command="{Binding ShowPasswordCommand}"
+                Text="הצג/הסתר סיסמה"
+                ZIndex="2" />
+        </HorizontalStackLayout>
         <Button
             Command="{Binding LoginCommand}"
             HorizontalOptions="FillAndExpand"
             Text="התחבר" />
         <HorizontalStackLayout Spacing="200">
-            <Button
-                Background="Transparent"
-                Command="{Binding RegisterCommand}"
-                FontAttributes="Bold"
-                FontSize="15"
-                Text="הרשמה"
-                TextColor="black"
-                VerticalOptions="Center" />
-            <Button
-                Background="Transparent"
-                Command="{Binding ForgotPasswordCommand}"
-                HorizontalOptions="End"
-                Text="שכחתי סיסמה"
-                TextColor="Black"
-                VerticalOptions="End" />
+            <Button Command="{Binding RegisterCommand}" Text="הרשמה" />
+            <Button Command="{Binding ForgotPasswordCommand}" Text="שכחתי סיסמה" />
         </HorizontalStackLayout>
     </VerticalStackLayout>
 </ContentPage>

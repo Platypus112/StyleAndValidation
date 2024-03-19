@@ -1,4 +1,5 @@
-﻿using StyleAndValidation.Models;
+﻿using Java.Sql;
+using StyleAndValidation.Models;
 using StyleAndValidation.Services;
 using StyleAndValidation.Views;
 using System;
@@ -28,6 +29,8 @@ namespace StyleAndValidation.ViewModels
         #region validation messages
         bool showUserNameError;
         string userNameErrorMessage;
+        bool showPasswordError;
+        string passwordErrorMessage;
         #endregion
         #endregion
 
@@ -45,7 +48,7 @@ namespace StyleAndValidation.ViewModels
         }
 
 
-        public string Password { get=>password; set { password = value; OnPropertyChanged(); } }
+        public string Password { get=>password; set { password = value;ValidatePassword(); OnPropertyChanged(); } }
         public string FullName { get=>fullName; set { fullName = value; OnPropertyChanged(); } }
         public string Email { get=>email; set { email = value; OnPropertyChanged(); } }
 
@@ -53,12 +56,15 @@ namespace StyleAndValidation.ViewModels
 
         #region Validation Properties
         public bool ShowUserNameError { get=>showUserNameError;  set { showUserNameError = value; OnPropertyChanged(); } }
-        public string UserNameErrorMEssage { get => userNameErrorMessage; set { userNameErrorMessage = value; OnPropertyChanged(); } }
+        public string UserNameErrorMessage { get => userNameErrorMessage; set { userNameErrorMessage = value; OnPropertyChanged(); } }
+        public bool ShowPasswordError { get => showPasswordError; set { showPasswordError = value; OnPropertyChanged(); } }
+        
+        public string PasswordErrorMessage { get => passwordErrorMessage; set { passwordErrorMessage = value; OnPropertyChanged(); } }
         #endregion
-        
-    #endregion
 
-        
+        #endregion
+
+
         #region Commands
         public ICommand RegisterCommand { get; protected set; }
         
@@ -117,12 +123,12 @@ namespace StyleAndValidation.ViewModels
                 case false:
                 //הצג הודעת שגיאה
                 ShowUserNameError = true;
-                UserNameErrorMEssage = "שם משתמש וסיסמה לא תקינים";
+                UserNameErrorMessage = "שם משתמש וסיסמה לא תקינים";
                     break;
                 case true:
                     //בטל הודעת שגיאה
                 ShowUserNameError = false;
-                UserNameErrorMEssage = string.Empty;
+                UserNameErrorMessage = string.Empty;
                     break;
 
             }
@@ -131,12 +137,56 @@ namespace StyleAndValidation.ViewModels
             cmd.ChangeCanExecute();
             return ok;
         }
+        private bool ValidatePassword()
+        {
+            string hasToHave = "!@#$%^&*()-+_=";
+            bool has1 = false;
+            for(int i = 0; i < hasToHave.Length; i++)
+            {
+                if (Password.Contains(hasToHave[i])) has1 = true;
+            }
+            hasToHave = "1234567890";
+            bool has2 = false;
+            for (int i = 0; i < hasToHave.Length; i++)
+            {
+                if (Password.Contains(hasToHave[i])) has2 = true;
+            }
+            hasToHave = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            bool has3 = false;
+            for (int i = 0; i < hasToHave.Length; i++)
+            {
+                if (Password.Contains(hasToHave[i])) has3 = true;
+            }
+            bool ok = (!string.IsNullOrEmpty(Password)) && (Password.Length >= 4)&& (Password.Length <=16)&&(has1)&&(has2)&&(has3);
+            switch (ok)
+            {
+                case false:
+                    //הצג הודעת שגיאה
+                    ShowPasswordError = true;
+                    PasswordErrorMessage = "שם משתמש וסיסמה לא תקינים";
+                    break;
+                case true:
+                    //בטל הודעת שגיאה
+                    ShowPasswordError = false;
+                    PasswordErrorMessage = string.Empty;
+                    break;
+            }
+            //בדיקה האם הכפתור צריך להיות מנוטרל או פעיל
+            var cmd = RegisterCommand as Command;
+            cmd.ChangeCanExecute();
+            return ok;
+        }
 
-        
+        private bool ValidateAge()
+        {
+            return DateTime.UtcNow.Year-BirthDate.Year>13;
+        }
 
         private bool ValidateAll()
         {
-            return !ShowUserNameError;
+            ValidatePassword();
+            ValidateUserName();
+            return !ShowPasswordError&&!ShowUserNameError&&ValidateAge();
         }
 
         #endregion
