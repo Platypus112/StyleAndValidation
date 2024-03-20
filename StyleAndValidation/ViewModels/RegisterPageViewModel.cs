@@ -40,7 +40,7 @@ namespace StyleAndValidation.ViewModels
             set { if (username != value)
                     { 
                     username = value;
-                    ValidateUserName();
+                    ((Command)RegisterCommand).ChangeCanExecute();
                     OnPropertyChanged();
                    
                 }
@@ -48,11 +48,11 @@ namespace StyleAndValidation.ViewModels
         }
 
 
-        public string Password { get=>password; set { password = value;ValidatePassword(); OnPropertyChanged(); } }
+        public string Password { get=>password; set { password = value;((Command)RegisterCommand).ChangeCanExecute(); OnPropertyChanged(); } }
         public string FullName { get=>fullName; set { fullName = value; OnPropertyChanged(); } }
         public string Email { get=>email; set { email = value; OnPropertyChanged(); } }
 
-        public DateTime BirthDate { get => birthDate; set { birthDate = value; OnPropertyChanged(); } }
+        public DateTime BirthDate { get => birthDate; set { birthDate = value; OnPropertyChanged(); ((Command)RegisterCommand).ChangeCanExecute(); } }
 
         #region Validation Properties
         public bool ShowUserNameError { get=>showUserNameError;  set { showUserNameError = value; OnPropertyChanged(); } }
@@ -74,7 +74,9 @@ namespace StyleAndValidation.ViewModels
             appServices = service;
             RegisterCommand = new Command(async () => await RegisterUser(),()=>ValidateAll()) ;
             Username = string.Empty;
-
+            ShowPasswordError = false;
+            ShowUserNameError = false;
+            BirthDate = DateTime.Parse("1/1/2000");
         }
 
 
@@ -113,11 +115,10 @@ namespace StyleAndValidation.ViewModels
         private bool ValidateUserName()
         {
             #region שימוש בREGEX
-            /*string pattern = @"^[a-zA-Z](?=.*[0-9])(?=.*[a-z])[a-zA-Z0-9]{3,7}$";
+            string pattern = @"^[a-zA-Z](?=.*[0-9])(?=.*[a-z])[a-zA-Z0-9]{3,7}$";
 
-            bool ok = Regex.IsMatch(Username, pattern);*/
+            bool ok =!string.IsNullOrEmpty(Username)&& Regex.IsMatch(Username, pattern);
             #endregion
-            bool ok =(!string.IsNullOrEmpty(Username)) && (Username.Length > 3);
             switch (ok)
             {
                 case false:
@@ -133,31 +134,13 @@ namespace StyleAndValidation.ViewModels
 
             }
             //בדיקה האם הכפתור צריך להיות מנוטרל או פעיל
-            var cmd = RegisterCommand as Command;
-            cmd.ChangeCanExecute();
             return ok;
         }
         private bool ValidatePassword()
         {
-            string hasToHave = "!@#$%^&*()-+_=";
-            bool has1 = false;
-            for(int i = 0; i < hasToHave.Length; i++)
-            {
-                if (Password.Contains(hasToHave[i])) has1 = true;
-            }
-            hasToHave = "1234567890";
-            bool has2 = false;
-            for (int i = 0; i < hasToHave.Length; i++)
-            {
-                if (Password.Contains(hasToHave[i])) has2 = true;
-            }
-            hasToHave = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            bool has3 = false;
-            for (int i = 0; i < hasToHave.Length; i++)
-            {
-                if (Password.Contains(hasToHave[i])) has3 = true;
-            }
-            bool ok = (!string.IsNullOrEmpty(Password)) && (Password.Length >= 4)&& (Password.Length <=16)&&(has1)&&(has2)&&(has3);
+            string pattern = @"^(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#])[A-Za-z0-9!@#]{4,16}$";
+            
+            bool ok =!string.IsNullOrEmpty(Password)&&Regex.IsMatch(Password, pattern);
             switch (ok)
             {
                 case false:
@@ -172,14 +155,12 @@ namespace StyleAndValidation.ViewModels
                     break;
             }
             //בדיקה האם הכפתור צריך להיות מנוטרל או פעיל
-            var cmd = RegisterCommand as Command;
-            cmd.ChangeCanExecute();
             return ok;
         }
 
         private bool ValidateAge()
         {
-            return DateTime.UtcNow.Year-BirthDate.Year>13;
+            return DateTime.Today.Year-BirthDate.Year>13;
         }
 
         private bool ValidateAll()
